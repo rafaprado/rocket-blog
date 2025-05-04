@@ -18,6 +18,7 @@ interface ArticleProps {
 interface ArticlesContextType {
   articles: ArticleProps[];
   fetchArticles: (query?: string) => Promise<void>;
+  isLoading: boolean;
 }
 
 interface ArticlesContextProviderProps {
@@ -28,15 +29,22 @@ export const ArticlesContext = createContext({} as ArticlesContextType);
 
 export function ArticlesProvider({ children }: ArticlesContextProviderProps) {
   const [articles, setArticles] = useState<ArticleProps[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchArticles = useCallback(async (query?: string) => {
-    const response = await api.get("/articles", {
-      params: {
-        q: query,
-      },
-    });
+    setIsLoading(true);
 
-    setArticles(response.data);
+    try {
+      const response = await api.get("/articles", {
+        params: {
+          q: query,
+        },
+      });
+
+      setArticles(response.data);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -44,7 +52,7 @@ export function ArticlesProvider({ children }: ArticlesContextProviderProps) {
   }, [fetchArticles]);
 
   return (
-    <ArticlesContext.Provider value={{ articles, fetchArticles }}>
+    <ArticlesContext.Provider value={{ articles, isLoading, fetchArticles }}>
       {children}
     </ArticlesContext.Provider>
   );

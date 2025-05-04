@@ -21,7 +21,8 @@ import { useContext } from "react";
 import { ArticlesContext } from "../../contexts/ArticlesContext";
 
 export function Home() {
-  const { articles } = useContext(ArticlesContext);
+  const { articles, isLoading } = useContext(ArticlesContext);
+  console.log(isLoading);
 
   return (
     <>
@@ -73,17 +74,21 @@ export function Home() {
 
         <SearchForm />
 
-        <AticlesGrid>
-          {articles.map((article) => (
-            <ArticleCard
-              key={article.id}
-              id={article.id}
-              content={article.content}
-              title={article.title}
-              createdAt={new Date(article.createdAt)}
-            />
-          ))}
-        </AticlesGrid>
+        {!isLoading ? (
+          <AticlesGrid>
+            {articles.map((article) => (
+              <ArticleCard
+                key={article.id}
+                id={article.id}
+                content={article.content}
+                title={article.title}
+                createdAt={new Date(article.createdAt)}
+              />
+            ))}
+          </AticlesGrid>
+        ) : (
+          <h2>Carregando...</h2>
+        )}
       </main>
     </>
   );
