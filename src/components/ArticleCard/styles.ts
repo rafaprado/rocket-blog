@@ -18,6 +18,7 @@ export const ArticleCardContainer = styled(Link)`
 export const ArticleCardHeader = styled.header`
   display: flex;
   justify-content: space-between;
+  gap: 2rem;
 
   margin-bottom: 2rem;
 

@@ -1,22 +1,9 @@
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { api } from "../libs/axios";
-
-interface ArticleProps {
-  id: number;
-  title: string;
-  content: string;
-  author: string;
-  createdAt: string;
-}
+import { createContext } from "use-context-selector";
 
 interface ArticlesContextType {
-  articles: ArticleProps[];
+  articles: any;
   fetchArticles: (query?: string) => Promise<void>;
   isLoading: boolean;
 }
@@ -28,28 +15,29 @@ interface ArticlesContextProviderProps {
 export const ArticlesContext = createContext({} as ArticlesContextType);
 
 export function ArticlesProvider({ children }: ArticlesContextProviderProps) {
-  const [articles, setArticles] = useState<ArticleProps[]>([]);
+  const [articles, setArticles] = useState(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchArticles = useCallback(async (query?: string) => {
+  const fetchArticles = async (query?: string) => {
     setIsLoading(true);
 
     try {
-      const response = await api.get("/articles", {
+      const response = await api.get("/issues", {
         params: {
-          q: query,
+          q: `${query ?? ""} repo:rafaprado/rocket-blog`,
         },
       });
 
       setArticles(response.data);
-    } finally {
       setIsLoading(false);
+    } catch {
+      throw new Error("Error when fetching");
     }
-  }, []);
+  };
 
   useEffect(() => {
     fetchArticles();
-  }, [fetchArticles]);
+  }, [articles]);
 
   return (
     <ArticlesContext.Provider value={{ articles, isLoading, fetchArticles }}>

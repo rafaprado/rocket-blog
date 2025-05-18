@@ -1,11 +1,14 @@
 import { SearchBar, SearchFormContainer } from "./styles";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useDebounce } from "../../../../hooks/useDebounce";
 import { ArticlesContext } from "../../../../contexts/ArticlesContext";
+import { useContextSelector } from "use-context-selector";
 
 export function SearchForm() {
   const [searchValue, setSearchValue] = useState("");
-  const { fetchArticles } = useContext(ArticlesContext);
+  const fetchArticles = useContextSelector(ArticlesContext, (context) => {
+    return context.fetchArticles;
+  });
 
   const debouncedSearch = useDebounce(searchValue, 500);
 

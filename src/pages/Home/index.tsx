@@ -17,23 +17,33 @@ import {
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { SearchForm } from "./components/SearchForm";
 import { ArticleCard } from "../../components/ArticleCard";
-import { useContext } from "react";
 import { ArticlesContext } from "../../contexts/ArticlesContext";
+import { useContextSelector } from "use-context-selector";
 
 export function Home() {
-  const { articles, isLoading } = useContext(ArticlesContext);
-  console.log(isLoading);
+  const { articles, isLoading } = useContextSelector(
+    ArticlesContext,
+    (context) => {
+      return {
+        articles: context.articles,
+        isLoading: context.isLoading,
+      };
+    }
+  );
 
   return (
     <>
       <MainCard>
         <AuthorContainer>
-          <img src="https://github.com/ghost.png" alt="" />
+          <img
+            src="https://avatars.githubusercontent.com/u/51882629?v=4"
+            alt=""
+          />
 
           <AuthorInfo>
             <header>
               <h1>Rafael Prado</h1>
-              <Link to={"https://github.com/bill"}>
+              <Link to={"https://github.com/rafaprado"}>
                 <span>Github</span>
                 <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
               </Link>
@@ -69,22 +79,26 @@ export function Home() {
       <main>
         <ArticlesHeader>
           <h2>Publicações</h2>
-          <span>{String(articles.length).padStart(2, "0")} Publicações</span>
+          <span>
+            {!isLoading || !articles ? String("").padStart(2, "0") : "00"}{" "}
+            Publicações
+          </span>
         </ArticlesHeader>
 
         <SearchForm />
 
-        {!isLoading ? (
+        {!isLoading || !articles ? (
           <AticlesGrid>
-            {articles.map((article) => (
-              <ArticleCard
-                key={article.id}
-                id={article.id}
-                content={article.content}
-                title={article.title}
-                createdAt={new Date(article.createdAt)}
-              />
-            ))}
+            {articles !== null &&
+              articles.items.map((article) => (
+                <ArticleCard
+                  key={article.id}
+                  id={article.id}
+                  content={article.body}
+                  title={article.title}
+                  createdAt={new Date(article["created_at"])}
+                />
+              ))}
           </AticlesGrid>
         ) : (
           <h2>Carregando...</h2>
